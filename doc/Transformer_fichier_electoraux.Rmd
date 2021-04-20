@@ -4,11 +4,10 @@ author: "Frédérik Cassor"
 date: "8 avril 2021"
 output: 
   word_document: default
-  html_document:
-    number_sections: TRUE
   pdf_document:
     number_sections: TRUE
-    keep_tex: TRUE
+  html_document:
+    number_sections: TRUE
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -71,7 +70,7 @@ include_graphics("fig/capture_lireInteractive.PNG")
 
 ### Import du tableau à transformer
 
-Dans le panneau de gauche, l'utilisateur indique d'abord charge le fichier .csv qu'il veut transformer en précisant le type de séparateur de colonnes (par défaut la virgule) et le séparateur décimal (par défaut la virgule). Le chargement du fichier est bien effectué à cette étape quand le message "Upload complete" est affché^[Veiller à ce que la taille du fichier à lire ne dépasse pas la limite maximale de chargement de fixée fixée à 100 Mo. Cette limite peut être modifiée dans les options de Shiny, options(shiny.maxRequestSize=**100**\*1024^2)]. Ensuite quand l'utilisateur clique sur le bouton `Lire le jeu de données`, le panneau de droite affiche le fichier importé avant sa transformation.
+Dans le panneau de gauche, l'utilisateur indique d'abord charge le fichier .csv qu'il veut transformer en précisant le type de séparateur de colonnes (par défaut la virgule) et le séparateur décimal (par défaut la virgule). Le chargement du fichier est bien effectué à cette étape quand le message "Upload complete" est affché^[La taille du fichier à lire ne doit pas dépasser la limite maximale de chargement fixée à 100 Mo. Cette limite peut être modifiée dans les options de Shiny, options(shiny.maxRequestSize=**100**\*1024^2)]. Ensuite quand l'utilisateur clique sur le bouton `Lire le jeu de données`, le panneau de droite affiche le fichier importé avant sa transformation.
 
 ```{r load_file, echo=FALSE, fig.cap="Import du fichier à transformer"}
 include_graphics("fig/import_file_csv.PNG")
@@ -97,15 +96,18 @@ include_graphics("fig/apres_transformation.PNG")
 
 ### Export du tableau transformé
 
-L'utilisateur peut télécharger le fichier transformé en cliquant sur le bouton `Télécharger` situé en bas à gauche du panneau de droite sous le fichier. Le fichier est téléchargé sous le répertoire indiqué par l'utilisateur au format CSV.
+L'utilisateur peut télécharger le fichier transformé en cliquant sur le bouton `Télécharger` situé en bas à gauche du panneau de droite sous le fichier. Le fichier est téléchargé sous le répertoire indiqué par l'utilisateur au format csv.
 
 ```{r telecharger, echo=FALSE, fig.cap="Télécharger le fichier transformé"}
 include_graphics("fig/telecharger_apres_transformation.PNG")
 ```
 
-### Lecture du fichier dans un tableur
 
-Pour ouvrir ce fichier CSV par exemple dans un tableur Excel, on déclare les colonnes du fichier et on choisit lesquelles on conserve dans le menu `Données\Convertir` de Excel. Ensuite, avec l'aide de l'assistant conversion, on peut sélectionner comment sont stockées les données dans le fichier :
+# Annexes
+
+## Ouvrir un fichier csv dans un tableur
+
+Pour ouvrir un fichier .csv comme celui exporté par cette app dans un tableur Excel, on déclare les colonnes du fichier et on choisit lesquelles on conserve dans le menu `Données\Convertir` de Excel. Ensuite, avec l'aide de l'assistant conversion, on peut sélectionner comment sont stockées les données dans le fichier :
 
   - Délimité (les colonnes du fichier sont séparés par un caractère spécial, la virgule, le point-virgule, etc.), c'est cette option qui est retenue ;
   - Largeur fixe (les champs sont rangées en colonne de largeur fixe et séparés par des espace)
@@ -114,7 +116,7 @@ Pour ouvrir ce fichier CSV par exemple dans un tableur Excel, on déclare les co
 include_graphics("fig/assistant_conversion_1_3.PNG")
 ```
 
-Ensuite, après avoir choisi l'option délimité à l'étape 1, il faut indiquer quel est le type de séparateur de colonnes du fichier CSV. On coche le séparateur de la virgule et on clique sur le bouton suivant. 
+Ensuite, après avoir choisi l'option délimité à l'étape 1, il faut indiquer quel est le type de séparateur de colonnes du fichier csv. On coche le séparateur de la virgule et on clique sur le bouton suivant. 
 
 ```{r xl_conversion_2, echo=FALSE, out.width="50%"}
 include_graphics("fig/assistant_conversion_2_3.PNG")
@@ -128,17 +130,18 @@ include_graphics("fig/assistant_conversion_3_3.PNG")
 
 On obtient le fichier transformé en matrice des voix exporté dans Excel pour d'autres calculs.
 
-![Affichage du tableau tranformé par l'API LireInterieur et exporté dans Excel](fig/tableau_matrice_des_voix.PNG)
+![Affichage du tableau tranformé par l'app LireInterieur et exporté dans Excel](fig/tableau_matrice_des_voix.PNG)
 
-# Annexe
 
 ## La fonction `lire`
 
-Pour aller plus loin, il peut être utile de connaître la fonction `lire` qui est à la base de la transformation des fichiers électoraux du Ministère de l'Intérieur.
+### Définition
+
+Pour aller plus loin, il peut être utile de connaître la fonction `lire` qui est à la base de l'application sur la transformation des fichiers électoraux du Ministère de l'Intérieur.
 
 La fonction `lire` est utile pour transformer les fichiers de résultats électoraux diffusés par le ministère de l'Intérieur français, lorsque l'offre électorale n'est pas homogène sur l'ensemble du territoire (législatives, européennes, cantonales, régionales...). Pour ce faire, les résultats sont agrégés en fonction des étiquettes attribuées par le ministère de l'intérieur.
 
-Cette fonction est définie avec les 5 arguments suivants :
+La fonction `lire(X, keep, col, keep.names, gap)` est définie avec les 5 paramètres suivants :
 
   - *X*, le data.frame d'origine importé depuis un fichier plat CSV généralement ;
   - *keep*, un vecteur indiquant les numéros (ou les noms) des colonnes de X qui sont à conserver telles quelles. Les colonnes Inscrits et Exprimés sont requises ;
@@ -146,3 +149,73 @@ Cette fonction est définie avec les 5 arguments suivants :
   - *keep.names*, le nom à donner aux colonnes retenues. Par défaut, c'est le nom d'origine des colonnes ;
   - *gap*, le nombre de colonnes intercalées entre la colonne des étiquettes et celle du nombre de voix. Par défaut 3
 
+La fonction retourne un data.frame qui contient en plus des colonnes retenues par l'argument *keep.names*, une colonne pour chaque nuance politique du nombre total de voix, une colonne avec le score rapporté aux inscrits et aux exprimés. Enfin, pour chaque nuance, une colonne indique le nombre de candidats (ou de listes) qu'il y avait dans la circonscription territoriale.
+
+### Algorithme détaillé de `lire`
+
+Plus en détail, la fonction `lire` réalise l'algorithme suivant :
+
+```{r, eval=FALSE}
+lire <- function(X, keep, col, keep.names = names(res1), gap=3) {
+  # Etape 0 : conversion des colonnes de type factor en colonne de type character
+  # On s'assure qu'il n'y a pas de factors qui traînent mais que des characters
+  X[,sapply(X, is.factor)] <- as.character(X[, sapply(X, is.factor)])  
+  
+  # Etape 1 : on crée un df dans lequel on va stocker les résultats
+  res1 <- X[, keep]
+  names(res1) <- keep.names
+  
+  # Etape 2 : on récupère l'ensemble des nunances possibles
+  nuances <- unique(unlist(X[, col]))[!seq_along(unique(unlist(X[, col]))) %in% match("",unique(unlist(X[, col])))]
+  nuances <- na.omit(nuances)
+  
+  # on crée une matrice pour stocker les étiquettes politiques et une matrice pour stocker les nombres de voix
+  etiquettes <- as.matrix(X[, col])
+  valeurs <- as.matrix(X[, col + gap])
+  
+  # Etape 3 : on crée une matrice initialisée à 0 pour stocker les résultats intermédiaires
+  candidats <- paste("NbCand", nuances, sep="")
+  res2 <- matrix(0, nrow=dim(res1)[1], ncol=length(nuances) + length(candidats), dimnames=list(c(), c(nuances, candidats)), byrow=TRUE)
+  
+  # Etape 4 : on calcule les nombres totaux des voix et nombres de candidats pour chaque nuance et chaque étiquette
+  for (i in 1:length(nuances)) {
+    for (j in 1:dim(etiquettes)[1]) {
+      index <- which(etiquettes[j, ] == nuances[i])
+      res2[j, nuances[i]] <- sum(valeurs[j, index], na.rm = TRUE)
+      res2[j, candidats[i]] <- sum(length(index), na.rm = TRUE)
+    }
+  }  
+  
+  # Etape 5 : on adjoint le df res1 avec la matrice des résultats intermédiaires
+  res <- cbind(res1, res2)
+  
+  # Etape 6 : on ajoute les scores des nuances rapportés aux inscrits et aux exprimés
+  res[, paste(nuances, ".ins", sep="")] <- res[, nuances] / res[, "Inscrits"] * 100
+  res[, paste(nuances, ".exp", sep="")] <- res[, nuances] / res[, "Exprimés"] * 100
+  
+  return(res)
+}
+```
+
+
+### Application sur le jeu de données `Eur2014Dpts`
+
+Le package fournit un jeu de données pour exemple, il s'agit des résultats des élections européennes en 2014 au niveau départemental^[http://www.data.gouv.fr/fr/dataset/elections-europeennes-2014-resulta-1].
+
+```{r data_euro14}
+library(LireMinInterieur)
+data(Eur2014Dpts)
+head(names(Eur2014Dpts), 50)
+```
+
+La fonction se lance directement en ajoutant les arguments `keep`, `col` et `keep.names` avec la commande suivante :
+
+```{r exemple_euro14}
+res <- lire(Eur2014Dpts, keep = c(2,4,5,7,9,12,15), col=c(seq(19,229,7)), keep.names=c("CodeDpt", "Inscrits", "Abstentions","Votants", "Blancs", "Nuls", "Exprimés"))
+```
+
+Le résultat de la fonction `lire` sur les données d'exemple est stocké dans le data.frame `res` qui se présente ainsi :
+
+```{r structure_res}
+str(res)
+```
