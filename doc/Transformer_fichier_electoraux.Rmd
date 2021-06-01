@@ -4,9 +4,9 @@ author: "Frédérik Cassor"
 date: "8 avril 2021"
 output: 
   word_document: default
-  pdf_document:
-    number_sections: TRUE
   html_document:
+    number_sections: TRUE
+  pdf_document:
     number_sections: TRUE
 ---
 
@@ -22,28 +22,28 @@ library(knitr)
 
 ## Présentation des fichiers du Ministère de l'Intérieur
 
-Le bureau des élections au sein du Ministère de l'Intérieur met à disposition du public (la communauté scientifique, les journalistes, etc.) les informations sur les srutins électoraux transmis par chaque préfecture et sous-préfecture après chaque élection, via la plateforme de données publiques de l'administration française <https://www.data.gouv.fr/fr/>.
+Le bureau des élections au sein du Ministère de l'Intérieur met à disposition du public (la communauté scientifique, les journalistes, etc.) les informations sur les srutins électoraux transmises par chaque préfecture et sous-préfecture après chaque tour de scrutin électoral, via la plateforme de données ouvertes de l'administration française <https://www.data.gouv.fr/fr/>.
 
-Il est nécessaire de s'assurer que le jeu de données provienne du Ministère de l'Intérieur. En effet, nombre de jeux de données sur les résultats électoraux présents sur cette plateforme sont déposés par des collectivités locales ou des services préfectoraux mais n'ont été ni certifiés ni consolidés par le bureau des élections au Ministère. Deux formats de restitution des résultats sont disponibles à l'utilisateur au téléchargement : soit le format Excel propriétaire (.xls), soit le format texte (.txt).
+Il est nécessaire de s'assurer que le jeu de données provienne bien du Ministère de l'Intérieur. En effet, nombre de jeux de données sur les résultats électoraux présents sur cette plateforme sont déposés par des mairies, des collectivités territoriales ou des services préfectoraux mais n'ont été ni certifiés ni consolidés par le bureau des élections au Ministère. Deux formats de restitution des résultats sont disponibles à l'utilisateur au téléchargement : soit le format Excel propriétaire (.xls), soit le format texte (.txt).
 
 ![Portail du ministère de l'intérieur sur data.gouv.fr](fig/datagouvMI.png){width=75%}
 
 ### Remarques sur la structure des données
 
-Quand on télécharge les résultats sous format Excel, on découvre qu'un certain nombre de colonnes du tableau ne comporte pas de noms à la 1ère du fichier. Il s'agit des noms des colonnes pour les listes n°2 et suivantes des candidatures en lice. Les colonnes du tableau n'ont pas toujours de noms en en-tête de fichier. Dans l'exemple ci-dessous des résultats des élections européennes en 2019 au niveau des départements, toutes les colonnes de A à W ont un nom d'en-tête, les suivantes n'ont pas de nom.
+Quand on télécharge les résultats sous format Excel, on découvre qu'un certain nombre de colonnes du tableau ne comporte pas de noms à la 1ère du fichier. Il s'agit des noms des colonnes pour les listes de candidature de rang n°2 et suivantes. Les colonnes du tableau n'ont pas toujours de noms en en-tête de colonnes. Par exemple, dans les résultats des élections européennes en 2019 au niveau des départements ci-dessous, toutes les colonnes de A à W ont un nom d'en-tête, les suivantes n'en ont pas.
 
 ![](fig/resultats-excel.png){width=75%}
 
-Le fichier tel qu'il est construit n'est pas directement exploitable pour des traitements statistiques ou cartographiques par exemple. Le tableau est de largeur variable pour chaque ligne du jeu de données. En règle générale, comme l'offre électorale dans un échelon géographique donné diffère presque toujours d'un autre échelon, il en résulte que le tableau n'a pas les mêmes champs de l'offre électorale d'une ligne à l'autre. Donc, chaque ligne du tableau a un nombre variable d'informations données sur les listes des candidats et leurs scores obtenus. 
+Le fichier tel qu'il est construit n'est pas directement exploitable pour des traitements statistiques ou cartographiques par exemple. Le tableau est de largeur variable pour chaque ligne du jeu de données correspondant à une circonscription électorale. Généralement, comme l'offre électorale dans un échelon géographique donné diffère presque toujours d'un autre échelon, il en résulte que le tableau n'a pas les mêmes champs de l'offre électoral d'une ligne à l'autre. Donc, chaque ligne du tableau a un nombre variable d'informations données sur les listes des candidats et leurs scores obtenus. 
 
-Il n'est pas immédiat de pouvoir effectuer des opérations arithmétiques sur les nombres de voix obtenues par les différentes listes de candidats sur un tel fichier. C'est pourquoi il faut transformer ce fichier en un tableau sous forme de matrice des voix pour chaque nuance politique qui soit uniforme pour toutes lignes du tableau.
+Il n'est pas immédiat de pouvoir effectuer des opérations arithmétiques sur les nombres de voix obtenues par les différentes listes de candidats sur un tel fichier. C'est pourquoi il est nécessaire de transformer ce fichier en un tableau sous forme de matrice des voix pour chaque nuance politique qui soit uniforme pour toutes lignes du tableau.
 
 
 # Transformer le fichier à l'aide de l'application `LireInteractif`
 
 ## Introduction du package `LireMinInterieur`
 
-Le politologue Joël Gombin a developpé le package [LireMinInterieur](https://github.com/joelgombin/LireMinInterieur), disponible non pas sur le CRAN mais sur le dépôt Github^[https://github.com/joelgombin/LireMinInterieur] de l'auteur, qui propose un outil très utile pour nettoyer et mettre en forme les résultats électoraux du Ministère de l'Intérieur.
+Le politologue Joël Gombin a developpé le package [LireMinInterieur](https://github.com/joelgombin/LireMinInterieur), disponible non pas sur le CRAN mais sur le dépôt Github^[https://github.com/joelgombin/LireMinInterieur] de l'auteur, qui propose un outil très utile pour nettoyer et mettre en forme les résultats électoraux du Ministère de l'Intérieur. 
 
 On l'installe depuis la console R avec la commande :
 
@@ -55,14 +55,14 @@ install_github("joelgombin/LireMinInterieur")
 
 ## Application `LireInteractif`
 
-Il existe une application développée dans `Shiny` pour transformer les fichiers du Ministère, c'est `LireInteractif`. On charge en mémoire le package `LireMinInterieur` et on lance l'application par la commande :
+Une application développée dans `Shiny` permet de transformer les fichiers du Ministère de manière interactive, sans connaître nécessairement le langage `R`, c'est l'application `LireInteractif`. Pour la lancer, on charge d'abord en mémoire le package `LireMinInterieur` et ensuite on appelle l'application.
 
 ```{r lireinteractif, eval=FALSE}
 library(LireMinInterieur)
 lireInteractif()
 ```
 
-Dans la fenêtre de l'application, on peut voir dans le panneau de gauche les informations entrées par l'utilisateur et dans celui de droite une vue du fichier électoral avant et après sa transformation.
+L'applicationc comporte deux panneaux : le panneau de gauche contient les informations entrées par l'utilisateur et un panneau de droite affiche une vue du fichier électoral avant et après sa transformation.
 
 ```{r apercu_api, echo=FALSE, fig.cap="Aperçu de l'application lireInteractif", out.width="75%"}
 include_graphics("fig/capture_lireInteractive.PNG")
@@ -70,13 +70,13 @@ include_graphics("fig/capture_lireInteractive.PNG")
 
 ### Import du tableau à transformer
 
-Dans le panneau de gauche, l'utilisateur indique d'abord charge le fichier .csv qu'il veut transformer en précisant le type de séparateur de colonnes (par défaut la virgule) et le séparateur décimal (par défaut la virgule). Le chargement du fichier est bien effectué à cette étape quand le message "Upload complete" est affché^[La taille du fichier à lire ne doit pas dépasser la limite maximale de chargement fixée à 100 Mo. Cette limite peut être modifiée dans les options de Shiny, options(shiny.maxRequestSize=**100**\*1024^2)]. Ensuite quand l'utilisateur clique sur le bouton `Lire le jeu de données`, le panneau de droite affiche le fichier importé avant sa transformation.
+Dans le panneau de gauche, l'utilisateur indique d'abord charge le fichier .csv qu'il veut transformer en précisant le type de séparateur de colonnes (par défaut la virgule) et le séparateur décimal (par défaut la virgule). Le chargement du fichier est bien effectué à cette étape quand le message "Upload complete" est affché sous le rectangle^[La taille du fichier à lire ne doit pas dépasser la limite maximale de chargement fixée à 100 Mo. Cette limite peut être modifiée dans les options de Shiny, options(shiny.maxRequestSize=**100**\*1024^2)]. Ensuite, l'utilisateur clique sur le bouton `Lire le jeu de données`, et s'affiche le fichier importé dans l'application dans le panneau de droite.
 
 ```{r load_file, echo=FALSE, fig.cap="Import du fichier à transformer"}
 include_graphics("fig/import_file_csv.PNG")
 ```
 
-Après avoir lu le fichier, il apparaît une nouvelle zone de paramètres à renseigner dans le panneau de droite. Cette zone requiert les informations suivantes :
+Après avoir lu le fichier, une nouvelle zone de paramètres apparaît dans le panneau de droite. Cette zone requiert les informations suivantes :
 
   - les colonnes à conserver dans le fichier en l'état. Choisir dans le menu déroulant les noms des colonnes que l'on souhaite conserver dans le fichier transformer ;
   - les nouveaux noms à attribuer aux colonnes choisies (accepter par défaut les noms proposés). A minima les colonnes *Inscrits* et *Exprimés* sont requises ;
